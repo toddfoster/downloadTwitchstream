@@ -2,7 +2,7 @@ import json
 from twitchdl import twitch
 import twitchdl.commands.videos as twitch_videos
 import twitchdl.commands.download as twitch_download
-import os.system
+from os import system
 
 """
 Download all archive videos from a given twitch stream automatically.
@@ -13,9 +13,13 @@ channel_name = "stthomasglassboro"
 debug = 5
 
 # Get highest id already downloaded
-downloaded = 0
-with open("downloaded.json", "r") as f:
-    highest_downloaded = json.load(f)
+highest_downloaded = 0
+try:
+    with open("downloaded.json", "r") as f:
+        highest_downloaded = json.load(f)
+except FileNotFoundError as e:
+    # no previous run; download them all!
+    pass
 
 if debug >= 10:
     print(f"DEBUG: highest_downloaded={highest_downloaded}")
