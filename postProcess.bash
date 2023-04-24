@@ -2,7 +2,7 @@
 set -e
 #
 # postProcess.bash: Fix up videos downloaded from twitch
-# 1. rename, changing timestampt to local time
+# 1. rename, changing timestamp to local time
 # 2. encode video with libx265
 # 3. copy to final resting place
 # 4. move original to trash (where I can find it if something went wrong)
