@@ -15,11 +15,11 @@ report() {
 	printf "LOG $(date --iso-8601=seconds) | $_self | $*\n"
 }
 
-SOURCE_DIRECTORY="."
+SOURCE_DIRECTORY="$HOME/Videos"
 SOURCE_FILE_TYPE="mkv"
 TIMEZONE_OFFSET=$(date +%:::z)
 FFMPEG_PARAMETERS="-c:v libx265 -c:a copy"
-FINAL_RESTING_PLACE="."
+FINAL_RESTING_PLACE="$HOME/Videos"
 TRASH="~/.local/share/Trash/files/"
 FILENAME_REGEX="stthomasglassboro_(2[0-9][0-9][0-9])-([0-1][0-9])-([0-3][0-9])T([0-2][0-9]):([0-5][0-9]):([0-5][0-9])Z"
 

@@ -2,7 +2,7 @@ import json
 from twitchdl import twitch
 import twitchdl.commands.videos as twitch_videos
 import twitchdl.commands.download as twitch_download
-from os import system
+import os
 
 """
 Download all archive videos from a given twitch stream automatically.
@@ -10,7 +10,10 @@ Avoid re-downloading those previously retreived.
 TEF - 20230423
 """
 channel_name = "stthomasglassboro"
-debug = 5
+debug = 0
+dest_dir = "~/Videos"
+
+os.chdir(os.path.expanduser(dest_dir))
 
 # Get highest id already downloaded
 highest_downloaded = 0
