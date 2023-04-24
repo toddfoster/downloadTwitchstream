@@ -20,7 +20,7 @@ SOURCE_FILE_TYPE="mkv"
 TIMEZONE_OFFSET=$(date +%:::z)
 FFMPEG_PARAMETERS="-c:v libx265 -c:a copy"
 FINAL_RESTING_PLACE="$HOME/Videos"
-TRASH="~/.local/share/Trash/files/"
+TRASH="$HOME/.local/share/Trash/files/"
 FILENAME_REGEX="stthomasglassboro_(2[0-9][0-9][0-9])-([0-1][0-9])-([0-3][0-9])T([0-2][0-9]):([0-5][0-9]):([0-5][0-9])Z"
 
 ffmpeg="$(which ffmpeg)"
