@@ -12,8 +12,8 @@ Files are saved in the current working directory as .mkv's. Time to post-process
 
 ## Getting started
 
-- Install twitch-dl (e.g., `pipx install twitch-dl`)
-- Edit the script (downloadTwitchstream.py) to specify the `channel_name` you want to follow
-- You might need to set the permissions (`chmod +x downloadTwitchstream.py`) or just always call it with `python3`
+- Install twitch-dl (e.g., `pipx install twitch-dl` -- pipx claims to ensure all dependencies will be met)
+- Edit the scripts (downloadTwitchstream.py, postProcess.bash) to specify the `channel_name` you want to follow
+- You might need to set the permissions (`chmod +x downloadTwitchstream.py postProcess.bash`) 
 - Run it!
 
