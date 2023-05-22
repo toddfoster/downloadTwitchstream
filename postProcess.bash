@@ -40,12 +40,12 @@ if [ ! -d "$SOURCE_DIRECTORY" ]; then
 fi
 
 # get lock to affirm I'm exclusive user of this backup directory
-exec 200>"$SOURCE_DIRECTORY/lock"
-if ! flock -n 200; then
+exec 9>"$SOURCE_DIRECTORY/lock"
+if ! flock -n 9; then
 	report "ERROR | Cannot lock directory for exclusive $_self"
 	exit 1
 fi
-# this now runs under the lock until 200 is closed
+# this now runs under the lock until 9 is closed
 # (it will be closed automatically when the script ends)
 # src: http://mywiki.wooledge.org/BashFAQ/045
 
@@ -58,16 +58,17 @@ for f in $SOURCE_DIRECTORY/*.$SOURCE_FILE_TYPE; do
 		hour=${BASH_REMATCH[4]}
 		minute=${BASH_REMATCH[5]}
 		second=${BASH_REMATCH[6]}
-	fi
-	hour=$(($hour + $TIMEZONE_OFFSET))
-	hour=$(printf "%02d" $hour)
-	[ -n "$DEBUG" ] && report "DEBUG | year=$year  month=$month  day=$day"
-	[ -n "$DEBUG" ] && report "DEBUG | hour=$hour  minute=$minute  second=$second"
 
-	new_name="$FINAL_RESTING_PLACE/StT-$year$month$day-$hour$minute$second.mp4"
-	report "INFO | Converting $(basename $f) to $(basename $new_name)"
-	if ffmpeg -i $f $FFMPEG_PARAMETERS $new_name; then
-		mv $f $TRASH
+		hour=$(($hour + $TIMEZONE_OFFSET))
+		hour=$(printf "%02d" $hour)
+		[ -n "$DEBUG" ] && report "DEBUG | year=$year  month=$month  day=$day"
+		[ -n "$DEBUG" ] && report "DEBUG | hour=$hour  minute=$minute  second=$second"
+
+		new_name="$FINAL_RESTING_PLACE/StT-$year$month$day-$hour$minute$second.mp4"
+		report "INFO | Converting $(basename $f) to $(basename $new_name)"
+		if ffmpeg -i $f $FFMPEG_PARAMETERS $new_name; then
+			mv $f $TRASH
+		fi
 	fi
 done
 report "FINISH"
