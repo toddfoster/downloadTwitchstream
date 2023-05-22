@@ -12,7 +12,8 @@ Files are saved in the current working directory as .mkv's. Time to post-process
 
 ## Getting started
 
-- Install the requirements (e.g., `pip install -r /path/to/requirements.txt`)
-- edit the script (downloadTwitchstream.py) to specify the `channel_name` you want to follow
-- Run it! (`python3 downloadTwitchstream.py`)
+- Install twitch-dl (e.g., `pipx install twitch-dl`)
+- Edit the script (downloadTwitchstream.py) to specify the `channel_name` you want to follow
+- You might need to set the permissions (`chmod +x downloadTwitchstream.py`) or just always call it with `python3`
+- Run it!
 
