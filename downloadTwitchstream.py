@@ -1,8 +1,13 @@
+#!/usr/bin/python3
+
 import json
-from twitchdl import twitch
-import twitchdl.commands.videos as twitch_videos
-import twitchdl.commands.download as twitch_download
+# from twitchdl import twitch
+# import twitchdl.commands.videos as twitch_videos
+# import twitchdl.commands.download as twitch_download
+from subprocess import run
 import os
+import sys
+import re
 
 """
 Download all archive videos from a given twitch stream automatically.
@@ -10,12 +15,17 @@ Avoid re-downloading those previously retreived.
 TEF - 20230423
 """
 channel_name = "stthomasglassboro"
-debug = 0
-dest_dir = "~/Videos"
+debug = 10
+dest_dir = "/home/todd/Videos"
+
+video_extract = re.compile("\d{10}")
+publish_extract = re.compile("(\d{4}-\d\d-\d\d) @ (\d\d:\d\d:\d\d)")
 
 os.chdir(os.path.expanduser(dest_dir))
 
+#######################################
 # Get highest id already downloaded
+#######################################
 highest_downloaded = 0
 try:
     with open("downloaded.json", "r") as f:
@@ -23,63 +33,47 @@ try:
 except FileNotFoundError as e:
     # no previous run; download them all!
     pass
-
 if debug >= 10:
     print(f"DEBUG: highest_downloaded={highest_downloaded}")
 
-# Get generator of id's available online
-total_count, generator = twitch.channel_videos_generator(
-    channel_name, 9999, "time", "archive", game_ids=[]
-)
-
-# Get list of videos to download
+#######################################
+# Get the videos available for download
 # TODO: exclude some based on date or brevity?
+#######################################
 to_download = []
-for video in generator:
-    if int(video["id"]) > highest_downloaded:
-        to_download.append(video)
-# Place the list in order from oldest to newest
-to_download.reverse()
 
+lines = run(["twitch-dl", "videos", channel_name], capture_output=True).stdout.decode()
+
+video = ""
+for l in lines.split('\n'):
+    if "Video " in l:
+        video = video_extract.search(l).group()
+        if int(video) > highest_downloaded:
+            to_download.append(video)
 if debug > 9:
     print(f"DEBUG: to_download={*to_download,}")
 if debug > 1:
     print(f"DEBUG: to_download count={len(to_download)}")
+        
+# Place the list in order from oldest to newest
+to_download.reverse()
 
+#######################################
 # Download videos
-# src: https://github.com/ihabunek/twitch-dl/issues/107
-class DotDict(dict):
-    """dot.notation access to dictionary attributes"""
-
-    __getattr__ = dict.get
-    __setattr__ = dict.__setitem__
-    __delattr__ = dict.__delitem__
-
-
+#######################################
 for video in to_download:
-    video_id = video["id"]
     if debug > 1:
-        print(f"DEBUG download id {video_id}")
-    download_args = DotDict(
-        {
-            "videos": [video_id],
-            "format": "mkv",
-            "keep": False,
-            "quality": "source",
-            "max_workers": 20,
-            "no_join": False,
-            "overwrite": True,
-            "start": None,
-            "end": None,
-            "output": "{channel_login}_{datetime}.{format}",
-        }
-    )
-    twitch_download(download_args)
+        print(f"DEBUG download id {video}")
+    run(["twitch-dl", "download", video, "--overwrite", "--quality", "source", "--output", "{channel_login}_{datetime}.{format}"]).check_returncode()
 
     # Set new highest_downloaded
-    if int(video_id) > highest_downloaded:
-        highest_downloaded = int(video_id)
+    if int(video) > highest_downloaded:
+        highest_downloaded = int(video)
 
+#######################################
 # Save highest downloaded id for next time
+#######################################
+if debug >= 10:
+    print(f"DEBUG: New highest_downloaded={highest_downloaded}")
 with open("downloaded.json", "w") as f:
     json.dump(highest_downloaded, f, indent=2)
