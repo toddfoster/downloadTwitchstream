@@ -29,7 +29,7 @@ os.chdir(os.path.expanduser(dest_dir))
 highest_downloaded = 0
 try:
     with open("downloaded.json", "r") as f:
-        highest_downloaded = json.load(f)
+        highest_downloaded = int(json.load(f))
 except FileNotFoundError as e:
     # no previous run; download them all!
     pass
