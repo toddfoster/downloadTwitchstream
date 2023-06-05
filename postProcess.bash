@@ -25,7 +25,7 @@ FILENAME_REGEX="stthomasglassboro_(2[0-9][0-9][0-9])-([0-1][0-9])-([0-3][0-9])T(
 
 ffmpeg="$(which ffmpeg)"
 
-report "INFO | Timezone offset = $TIMESZONE_OFFSET"
+report "INFO | Timezone offset = $TIMEZONE_OFFSET"
 
 SOURCE_DIRECTORY=$(realpath "$SOURCE_DIRECTORY")
 if [ ! -d "$SOURCE_DIRECTORY" ]; then
@@ -40,14 +40,16 @@ if [ ! -d "$SOURCE_DIRECTORY" ]; then
 fi
 
 # get lock to affirm I'm exclusive user of this backup directory
-exec 9>"$SOURCE_DIRECTORY/lock"
-if ! flock -n 9; then
+lockfile="$SOURCE_DIRECTORY/flock_target"
+exec {lock_fd}>"$lockfile"
+if ! flock -n "$lock_fd"; then
 	report "ERROR | Cannot lock directory for exclusive $_self"
 	exit 1
 fi
-# this now runs under the lock until 9 is closed
-# (it will be closed automatically when the script ends)
+# the lock is maintained while this script (containing the exec) runs
 # src: http://mywiki.wooledge.org/BashFAQ/045
+# src: https://stackoverflow.com/questions/24388009/linux-flock-how-to-just-lock-a-file
+# n.b.: never remove the lockfile (in the script) due to possible race condition;
 
 for f in $SOURCE_DIRECTORY/*.$SOURCE_FILE_TYPE; do
 	[ -n "$DEBUG" ] && report "DEBUG | Working on file $f"
