@@ -15,11 +15,11 @@ Avoid re-downloading those previously retreived.
 TEF - 20230423
 """
 channel_name = "stthomasglassboro"
-debug = 10
+debug = 5
 dest_dir = "/home/todd/Videos"
 
-video_extract = re.compile("\d{10}")
-publish_extract = re.compile("(\d{4}-\d\d-\d\d) @ (\d\d:\d\d:\d\d)")
+video_extract = re.compile("\\d{10}")
+publish_extract = re.compile("(\\d{4}-\\d\\d-\\d\\d) @ (\\d\\d:\\d\\d:\\d\\d)")
 
 os.chdir(os.path.expanduser(dest_dir))
 
@@ -43,10 +43,14 @@ if debug >= 10:
 to_download = []
 
 lines = run(["twitch-dl", "videos", channel_name], capture_output=True).stdout.decode()
+if debug > 19:
+    print(f"DEBUG: videos in channel:\n{lines}----------\n")
 
 video = ""
 for l in lines.split('\n'):
     if "Video " in l:
+        if debug > 10:
+            print(f"DEBUG: possible download candidate: {l}")
         video = video_extract.search(l).group()
         if int(video) > highest_downloaded:
             to_download.append(video)
